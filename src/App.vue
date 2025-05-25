@@ -23,6 +23,7 @@ const currentChapter = ref(lastReading.chapter)
 const currentVerse = ref(lastReading.verse)
 const bibleData = ref(null)
 const loading = ref(true)
+const bibleReaderRef = ref(null)
 
 const changeBook = (book) => {
   currentBook.value = book
@@ -36,10 +37,12 @@ const changeChapter = (chapter) => {
   currentVerse.value = null
   saveLastReading()
   
-  // Rolar para o topo da página ao mudar de capítulo em dispositivos móveis
-  if (window.innerWidth <= 768) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  // Rolar para o início do texto do capítulo
+  setTimeout(() => {
+    if (bibleReaderRef.value) {
+      bibleReaderRef.value.scrollToTop()
+    }
+  }, 100)
 }
 
 const changeVerse = (verse) => {
@@ -147,6 +150,7 @@ onMounted(async () => {
         />
         
         <BibleReader 
+          ref="bibleReaderRef"
           :book="currentBook" 
           :chapter="currentChapter" 
           :verse="currentVerse"

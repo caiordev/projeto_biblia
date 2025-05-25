@@ -89,6 +89,35 @@ const verseContent = computed(() => {
   return formattedVerses
 })
 
+// Método para rolar para o início do texto do capítulo
+const scrollToTop = () => {
+  setTimeout(() => {
+    // Tentar encontrar o primeiro versículo
+    const firstVerse = document.querySelector('.verses-container .verse')
+    if (firstVerse) {
+      // Rolar para o primeiro versículo
+      firstVerse.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      // Fallback: rolar para o topo do conteúdo
+      const readerContent = document.querySelector('.reader-content')
+      if (readerContent) {
+        readerContent.scrollTop = 0
+      }
+    }
+  }, 100)
+}
+
+// Expor o método para o componente pai
+defineExpose({ scrollToTop })
+
+// Observar mudanças no capítulo para rolar automaticamente para o início do texto
+watch(() => props.chapter, (newChapter, oldChapter) => {
+  if (newChapter !== oldChapter) {
+    // Pequeno atraso para garantir que o DOM foi atualizado
+    setTimeout(scrollToTop, 200)
+  }
+})
+
 const selectVerse = (verseNumber) => {
   emit('select-verse', verseNumber === props.verse ? null : verseNumber)
   
