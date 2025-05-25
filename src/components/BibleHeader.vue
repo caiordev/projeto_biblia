@@ -1,6 +1,9 @@
 <script setup>
 // Componente de cabeçalho para o site da Bíblia
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const emit = defineEmits(['continue-reading'])
 
 // Verificar se existe uma leitura salva
@@ -18,12 +21,20 @@ onMounted(() => {
 const continueReading = () => {
   emit('continue-reading')
 }
+
+const goHome = () => {
+  router.push({ name: 'home' })
+}
+
+const goToBible = () => {
+  router.push({ name: 'books' })
+}
 </script>
 
 <template>
   <header class="bible-header">
     <div class="header-container">
-      <div class="logo-container">
+      <div class="logo-container" @click="goHome" style="cursor: pointer;">
         <div class="logo-icon">
           <span class="book-icon">📖</span>
         </div>
@@ -33,8 +44,16 @@ const continueReading = () => {
         </div>
       </div>
       
-      <div class="header-actions" v-if="hasLastReading">
-        <button @click="continueReading" class="continue-reading-btn">
+      <div class="nav-menu">
+        <button @click="goHome" class="nav-button">
+          <span class="nav-icon">🙏</span>
+          Liturgia do Dia
+        </button>
+        <button @click="goToBible" class="nav-button">
+          <span class="nav-icon">📚</span>
+          Bíblia
+        </button>
+        <button v-if="hasLastReading" @click="continueReading" class="nav-button continue-reading-btn">
           <span class="continue-icon">⏵</span>
           Continuar leitura
         </button>
@@ -119,12 +138,14 @@ const continueReading = () => {
   margin-top: 0.2rem;
 }
 
-.header-actions {
+.nav-menu {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.continue-reading-btn {
+.nav-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -140,13 +161,17 @@ const continueReading = () => {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.continue-reading-btn:hover {
+.nav-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.continue-icon {
+.continue-reading-btn {
+  background-color: var(--accent-color);
+}
+
+.continue-icon, .nav-icon {
   font-size: 1.1rem;
 }
 
@@ -179,6 +204,17 @@ const continueReading = () => {
   
   .book-icon {
     font-size: 2rem;
+  }
+  
+  .nav-menu {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  
+  .nav-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

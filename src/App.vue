@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import BibleHeader from './components/BibleHeader.vue'
-import BibleReader from './components/BibleReader.vue'
-import BibleSelector from './components/BibleSelector.vue'
+
+const router = useRouter()
 
 // Recuperar última leitura do localStorage ou usar valores padrão
 const getLastReading = () => {
@@ -17,148 +18,37 @@ const getLastReading = () => {
   return { book: 'Gênesis', chapter: 1, verse: null }
 }
 
-const lastReading = getLastReading()
-const currentBook = ref(lastReading.book)
-const currentChapter = ref(lastReading.chapter)
-const currentVerse = ref(lastReading.verse)
-const bibleData = ref(null)
-const loading = ref(true)
-const bibleReaderRef = ref(null)
-
-const changeBook = (book) => {
-  currentBook.value = book
-  currentChapter.value = 1
-  currentVerse.value = null
-  saveLastReading()
-}
-
-const changeChapter = (chapter) => {
-  currentChapter.value = chapter
-  currentVerse.value = null
-  saveLastReading()
-  
-  // Rolar para o início do texto do capítulo
-  setTimeout(() => {
-    if (bibleReaderRef.value) {
-      bibleReaderRef.value.scrollToTop()
-    }
-  }, 100)
-}
-
-const changeVerse = (verse) => {
-  currentVerse.value = verse
-  saveLastReading()
-}
-
-// Salvar a última leitura no localStorage
-const saveLastReading = () => {
-  try {
-    const readingData = {
-      book: currentBook.value,
-      chapter: currentChapter.value,
-      verse: currentVerse.value
-    }
-    localStorage.setItem('lastReading', JSON.stringify(readingData))
-    console.log('Leitura salva:', readingData)
-  } catch (error) {
-    console.error('Erro ao salvar leitura:', error)
-  }
-}
-
-// Carregar a última leitura salva
-const loadLastReading = () => {
+// Carregar a última leitura salva e navegar para ela
+const continueReading = () => {
   try {
     const savedReading = localStorage.getItem('lastReading')
     if (savedReading) {
       const reading = JSON.parse(savedReading)
-      currentBook.value = reading.book
-      currentChapter.value = reading.chapter
-      if (reading.verse) {
-        currentVerse.value = reading.verse
-        // Dar tempo para o componente renderizar antes de rolar para o versículo
-        setTimeout(() => {
-          const verseElement = document.getElementById(`verse-${reading.verse}`)
-          if (verseElement) {
-            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          }
-        }, 500)
-      }
-      
-      // Fechar o seletor de livros se estiver aberto (em dispositivos móveis)
-      if (window.innerWidth <= 768) {
-        const selector = document.querySelector('.bible-selector')
-        if (selector && selector.classList.contains('active')) {
-          selector.classList.remove('active')
+      console.log('Continuando leitura:', reading)
+      router.push({ 
+        name: 'reader', 
+        params: { 
+          book: reading.book, 
+          chapter: reading.chapter 
         }
-      }
+      })
+    } else {
+      // Se não houver leitura salva, ir para a lista de livros
+      router.push({ name: 'books' })
     }
   } catch (error) {
     console.error('Erro ao carregar última leitura:', error)
+    router.push({ name: 'books' })
   }
 }
-
-onMounted(async () => {
-  try {
-    // Carregando o arquivo JSON local aa.json
-    // Usar import.meta.env.BASE_URL para considerar o caminho base configurado no vite.config.js
-    const response = await fetch(`${import.meta.env.BASE_URL}aa.json`)
-    
-    // Tratando possíveis problemas de codificação
-    const text = await response.text()
-    const jsonText = text.replace(/^\ufeff/, '') // Remove BOM se existir
-    
-    const data = JSON.parse(jsonText)
-    console.log('Dados carregados:', data)
-    
-    bibleData.value = data
-    
-    // Verificar se o livro atual existe nos dados carregados
-    const bookExists = data.some(book => 
-      (book.book === currentBook.value) || (book.name === currentBook.value)
-    )
-    
-    if (!bookExists && data.length > 0) {
-      // Se o livro atual não existir, selecionar o primeiro livro disponível
-      // Verificar qual propriedade o livro usa (book ou name)
-      currentBook.value = data[0].book || data[0].name
-    }
-  } catch (error) {
-    console.error('Erro ao carregar dados da Bíblia:', error)
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <template>
   <div class="app-container">
-    <BibleHeader @continue-reading="loadLastReading" />
+    <BibleHeader @continue-reading="continueReading" />
     
     <main class="main-content">
-      <div v-if="loading" class="loading">
-        <div class="spinner"></div>
-        <p>Carregando a Bíblia...</p>
-      </div>
-      
-      <div v-else class="bible-container">
-        <BibleSelector 
-          :currentBook="currentBook" 
-          :currentChapter="currentChapter"
-          :bibleData="bibleData"
-          @change-book="changeBook"
-          @change-chapter="changeChapter"
-        />
-        
-        <BibleReader 
-          ref="bibleReaderRef"
-          :book="currentBook" 
-          :chapter="currentChapter" 
-          :verse="currentVerse"
-          :bibleData="bibleData"
-          @select-verse="changeVerse"
-          @change-chapter="changeChapter"
-        />
-      </div>
+      <router-view></router-view>
     </main>
     
     <footer class="footer">
