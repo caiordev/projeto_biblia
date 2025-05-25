@@ -15,4 +15,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  base: '/projeto_biblia/', // Add this line for GitHub Pages deployment
 })
