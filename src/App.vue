@@ -97,7 +97,8 @@ const loadLastReading = () => {
 onMounted(async () => {
   try {
     // Carregando o arquivo JSON local aa.json
-    const response = await fetch('/aa.json')
+    // Usar import.meta.env.BASE_URL para considerar o caminho base configurado no vite.config.js
+    const response = await fetch(`${import.meta.env.BASE_URL}aa.json`)
     
     // Tratando possíveis problemas de codificação
     const text = await response.text()
