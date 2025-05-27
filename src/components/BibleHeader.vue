@@ -4,7 +4,13 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const emit = defineEmits(['continue-reading'])
+const props = defineProps({
+  isDarkTheme: {
+    type: Boolean,
+    default: false
+  }
+})
+const emit = defineEmits(['continue-reading', 'toggle-theme'])
 
 // Verificar se existe uma leitura salva
 const hasLastReading = ref(false)
@@ -29,33 +35,34 @@ const goHome = () => {
 const goToBible = () => {
   router.push({ name: 'books' })
 }
+
+const toggleTheme = () => {
+  emit('toggle-theme')
+}
 </script>
 
 <template>
   <header class="bible-header">
     <div class="header-container">
       <div class="logo-container" @click="goHome" style="cursor: pointer;">
-        <div class="logo-icon">
-          <span class="book-icon">📖</span>
-        </div>
-        <div class="logo-text">
-          <h1 class="site-title">Bíblia Online</h1>
-          <p class="site-subtitle">Leitura e estudo da palavra de Deus</p>
-        </div>
+        <span class="book-icon">📖</span>
+        <h1 class="site-title">Bíblia Online</h1>
       </div>
       
       <div class="nav-menu">
-        <button @click="goHome" class="nav-button">
-          <span class="nav-icon">🙏</span>
-          Liturgia do Dia
-        </button>
-        <button @click="goToBible" class="nav-button">
-          <span class="nav-icon">📚</span>
-          Bíblia
-        </button>
-        <button v-if="hasLastReading" @click="continueReading" class="nav-button continue-reading-btn">
-          <span class="continue-icon">⏵</span>
-          Continuar leitura
+        <div class="nav-buttons">
+          <button @click="goHome" class="nav-button" title="Liturgia do Dia">
+            <span class="nav-icon">🙏</span>
+          </button>
+          <button @click="goToBible" class="nav-button" title="Bíblia">
+            <span class="nav-icon">📚</span>
+          </button>
+          <button v-if="hasLastReading" @click="continueReading" class="nav-button continue-reading-btn" title="Continuar leitura">
+            <span class="continue-icon">⏵</span>
+          </button>
+        </div>
+        <button @click="toggleTheme" class="theme-toggle-btn" title="Alternar tema">
+          <span class="theme-icon">{{ isDarkTheme ? '☀️' : '🌙' }}</span>
         </button>
       </div>
     </div>
@@ -66,9 +73,10 @@ const goToBible = () => {
 .bible-header {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
   color: var(--light-text);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  padding: 0.75rem 0;
 }
 
 .bible-header::before {
@@ -76,18 +84,18 @@ const goToBible = () => {
   position: absolute;
   top: 0;
   right: 0;
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
   background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
   border-radius: 50%;
-  transform: translate(50%, -50%);
+  transform: translate(30%, -30%);
 }
 
 .header-container {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 1rem;
-  display: column;
+  padding: 0 1.5rem;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
@@ -97,124 +105,129 @@ const goToBible = () => {
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
+  transition: transform 0.2s ease;
 }
 
-.logo-icon {
-  background-color: rgba(255, 255, 255, 0.15);
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease;
-}
-
-.logo-icon:hover {
-  transform: translateY(-5px) rotate(5deg);
+.logo-container:hover {
+  transform: translateY(-2px);
 }
 
 .book-icon {
-  font-size: 2.5rem;
-}
-
-.logo-text {
-  text-align: left;
+  font-size: 1.75rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .site-title {
-  font-size: 2.5rem;
-  margin-bottom: 0.3rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 600;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.site-subtitle {
-  font-size: 0.9rem;
-  opacity: 0.9;
-  margin-top: 0.2rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .nav-menu {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 1.5rem;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .nav-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--light-text);
   border: none;
-  padding: 0.6rem 1rem;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .continue-reading-btn {
   background-color: var(--accent-color);
 }
 
+.theme-toggle-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--light-text);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.theme-icon {
+  font-size: 1.1rem;
+}
+
 .continue-icon, .nav-icon {
   font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
   .bible-header {
-    padding: 1.5rem 1rem;
+    padding: 0.5rem 0;
   }
   
-  .logo-container {
-    gap: 1rem;
-    text-align: center;
-  }
-  
-  .logo-text {
-    text-align: center;
+  .header-container {
+    padding: 0 1rem;
   }
   
   .site-title {
-    font-size: 2rem;
-  }
-  
-  .site-subtitle {
-    font-size: 1rem;
-  }
-  
-  .logo-icon {
-    width: 60px;
-    height: 60px;
+    font-size: 1.25rem;
   }
   
   .book-icon {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    width: 32px;
+    height: 32px;
   }
   
-  .nav-menu {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.75rem;
+  .nav-button, .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
   }
   
-  .nav-button {
-    width: 100%;
-    justify-content: center;
+  .nav-icon, .theme-icon, .continue-icon {
+    font-size: 1rem;
   }
 }
 </style>

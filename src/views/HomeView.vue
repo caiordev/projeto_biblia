@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 
 const liturgyData = ref(null)
 const loading = ref(true)
 const error = ref(null)
+
+// Injetar o tema atual do componente pai
+const isDarkTheme = inject('isDarkTheme', ref(false))
 
 const fetchLiturgyData = async () => {
   try {
@@ -127,23 +130,23 @@ onMounted(() => {
 
 <style scoped>
 .home-container {
-  padding: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
+  padding: 0;
+  width: 100%;
 }
 
 .liturgy-container {
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
+  background-color: var(--card-background);
   overflow: hidden;
+  transition: background-color 0.3s ease;
+  width: 100%;
 }
 
 .liturgy-header {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
-  color: white;
+  color: var(--light-text);
   padding: 2rem;
   text-align: center;
+  transition: background 0.3s ease;
 }
 
 .liturgy-title {
@@ -195,7 +198,9 @@ onMounted(() => {
 }
 
 .liturgy-sections {
-  padding: 2rem;
+  padding: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .liturgy-section {
@@ -231,7 +236,8 @@ onMounted(() => {
 .title {
   font-style: italic;
   margin-bottom: 1rem;
-  color: #555;
+  color: var(--text-color);
+  opacity: 0.8;
 }
 
 .text {
@@ -262,11 +268,12 @@ onMounted(() => {
 }
 
 .error-container {
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
+  background-color: var(--card-background);
   padding: 3rem;
   text-align: center;
+  transition: background-color 0.3s ease;
+  max-width: 800px;
+  margin: 2rem auto;
 }
 
 .error-icon {
@@ -276,7 +283,7 @@ onMounted(() => {
 
 .retry-button {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--light-text);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -292,12 +299,8 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .home-container {
-    padding: 1rem;
-  }
-  
   .liturgy-header {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
   }
   
   .liturgy-title {
@@ -305,7 +308,7 @@ onMounted(() => {
   }
   
   .liturgy-sections {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
   }
   
   .section-title {
