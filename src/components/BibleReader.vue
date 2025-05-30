@@ -551,16 +551,16 @@ const nextChapter = () => {
         <div 
           v-for="verseItem in verseContent" 
           :key="verseItem.number"
-          :id="`verse-${verseItem.number}`"
-          class="verse"
-          :class="{ 'verse-highlighted': verseItem.number === verse }"
-          @click="selectVerse(verseItem.number)"
-          tabindex="0"
-          @keydown.enter="selectVerse(verseItem.number)"
-        >
-          <span class="verse-number" aria-hidden="true">{{ verseItem.number }}</span>
-          <span class="verse-text">{{ verseItem.text }}</span>
-        </div>
+            :id="`verse-${verseItem.number}`"
+            class="verse"
+            :class="{ 'verse-highlighted': verseItem.number === verse }"
+            @click="selectVerse(verseItem.number)"
+            tabindex="0"
+            @keydown.enter="selectVerse(verseItem.number)"
+          >
+            <span class="verse-number" aria-hidden="true">{{ verseItem.number }}</span>
+            <span class="verse-text">{{ verseItem.text }}</span>
+          </div>
         
         <div class="chapter-actions">
           <button @click="markChapterAsRead" class="mark-read-button">
