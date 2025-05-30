@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // Determinar o base path com base no ambiente
 const isAWS = process.env.AWS_AMPLIFY === 'true';
+const isVercel = process.env.VERCEL_DEPLOYMENT === 'true' || process.env.VERCEL === '1';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -18,6 +19,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  // Usar '/' para AWS Amplify e '/projeto_biblia/' para GitHub Pages
-  base: isAWS ? '/' : '/projeto_biblia/',
+  // Usar '/' para AWS Amplify e Vercel, '/projeto_biblia/' para GitHub Pages
+  base: (isAWS || isVercel) ? '/' : '/projeto_biblia/',
 })
