@@ -129,18 +129,25 @@ const scrollToTop = () => {
   }, 100)
 }
 
-// Inicializar o sintetizador de voz quando o componente for montado
 // Calcular o progresso de leitura
 const calculateReadingProgress = () => {
-  if (!props.bibleData || !props.book) return
+  if (!props.bibleData) {
+    console.error('Dados da Bíblia não disponíveis')
+    return
+  }
+  
+  console.log('Calculando progresso de leitura')
   
   // Carregar dados de progresso do localStorage
   try {
     const savedProgress = localStorage.getItem('readingProgress')
+    console.log('Dados recuperados do localStorage:', savedProgress)
+    
     if (savedProgress) {
       const parsed = JSON.parse(savedProgress)
       readingProgress.value.readChapters = parsed.readChapters || {}
       readingProgress.value.totalReadChapters = parsed.totalReadChapters || 0
+      console.log('Dados de progresso carregados:', readingProgress.value)
     }
   } catch (error) {
     console.error('Erro ao carregar progresso de leitura:', error)
@@ -180,14 +187,25 @@ const calculateReadingProgress = () => {
     if (totalBookChapters > 0) {
       readingProgress.value.currentBook = Math.round((readBookChapters / totalBookChapters) * 100)
     }
+    
+    console.log('Progresso calculado:', {
+      geral: readingProgress.value.general,
+      livroAtual: readingProgress.value.currentBook,
+      totalLidos: readingProgress.value.totalReadChapters,
+      totalCapitulos: readingProgress.value.totalChapters
+    })
   }
 }
 
 // Marcar capítulo como lido
 const markChapterAsRead = () => {
-  if (!currentBookData.value || !props.chapter) return
+  if (!currentBookData.value || !props.chapter) {
+    console.error('Dados do livro ou capítulo não disponíveis')
+    return
+  }
   
   const bookName = currentBookData.value.book || currentBookData.value.name
+  console.log('Marcando como lido:', bookName, props.chapter)
   
   // Inicializar objeto de progresso para o livro se não existir
   if (!readingProgress.value.readChapters[bookName]) {
@@ -200,24 +218,30 @@ const markChapterAsRead = () => {
     readingProgress.value.readChapters[bookName][props.chapter] = true
     readingProgress.value.totalReadChapters++
     
-    // Recalcular progresso
-    calculateReadingProgress()
-    
     // Salvar progresso no localStorage
     try {
-      localStorage.setItem('readingProgress', JSON.stringify({
+      const dataToSave = {
         readChapters: readingProgress.value.readChapters,
         totalReadChapters: readingProgress.value.totalReadChapters
-      }))
+      }
+      localStorage.setItem('readingProgress', JSON.stringify(dataToSave))
+      console.log('Progresso salvo com sucesso:', dataToSave)
+      
+      // Recalcular progresso após salvar
+      calculateReadingProgress()
     } catch (error) {
       console.error('Erro ao salvar progresso de leitura:', error)
     }
+  } else {
+    console.log('Capítulo já marcado como lido anteriormente')
   }
 }
 
 onMounted(() => {
-  // Calcular progresso de leitura
-  calculateReadingProgress()
+  // Calcular progresso de leitura após um pequeno delay para garantir que os dados estejam carregados
+  setTimeout(() => {
+    calculateReadingProgress()
+  }, 300)
   
   // Inicializar sintetizador de voz
   if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -563,7 +587,7 @@ const nextChapter = () => {
           </div>
         
         <div class="chapter-actions">
-          <button @click="markChapterAsRead" class="mark-read-button">
+          <button @click="markChapterAsRead" class="mark-read-button" :disabled="readingProgress.readChapters[currentBookData?.book || currentBookData?.name]?.[props.chapter]">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -870,6 +894,14 @@ const nextChapter = () => {
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mark-read-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
 }
 
 .mark-read-button:hover {
