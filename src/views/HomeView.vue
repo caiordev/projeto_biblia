@@ -22,8 +22,47 @@ const fetchLiturgyData = async () => {
   } catch (err) {
     error.value = err.message
     console.error('Erro ao carregar liturgia:', err)
+    // Tentar usar dados de fallback em caso de erro
+    useFallbackData()
   } finally {
     loading.value = false
+  }
+}
+
+// Função para usar dados de fallback quando a API falha
+const useFallbackData = () => {
+  // Dados estáticos para garantir que sempre haja conteúdo
+  liturgyData.value = {
+    data: new Date().toLocaleDateString('pt-BR'),
+    liturgia: 'Conteúdo Offline',
+    cor: 'verde',
+    evangelho: {
+      referencia: 'João 3:16',
+      titulo: 'Deus amou o mundo de tal maneira',
+      texto: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.'
+    },
+    primeiraLeitura: {
+      referencia: 'Gênesis 1:1',
+      titulo: 'No princípio',
+      texto: 'No princípio, Deus criou os céus e a terra. A terra era sem forma e vazia; e havia trevas sobre a face do abismo, mas o Espírito de Deus pairava sobre a face das águas.'
+    },
+    salmo: {
+      referencia: 'Salmo 23',
+      refrao: 'O Senhor é meu pastor, nada me faltará.',
+      texto: 'O SENHOR é o meu pastor, nada me faltará.\nDeitar-me faz em verdes pastos, guia-me mansamente a águas tranquilas.\nRefrigera a minha alma; guia-me pelas veredas da justiça, por amor do seu nome.'
+    },
+    segundaLeitura: {
+      referencia: '1 Coríntios 13:4-7',
+      titulo: 'O amor',
+      texto: 'O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta.'
+    },
+    dia: 'Senhor nosso Deus, concedei-nos a graça de viver no teu amor todos os dias de nossa vida.',
+    oferendas: 'Aceitai, ó Deus, as oferendas do vosso povo, para que possamos conseguir por este sacramento o que proclamamos pela fé.',
+    comunhao: 'Alimentados com o Corpo e o Sangue de vosso Filho, nós vos suplicamos, ó Deus: dai-nos comungar de tal modo no Espírito Santo que sejamos em Cristo um só corpo e um só espírito.',
+    antifonas: {
+      entrada: 'Vinde, adoremos a Deus, prostrados o aclamemos, diante do Senhor que nos criou, pois ele é o nosso Deus.',
+      comunhao: 'Felizes os que têm puro o coração, porque eles verão a Deus! Felizes os que promovem a paz, porque serão chamados filhos de Deus! Felizes os que são perseguidos por causa da justiça, porque deles é o Reino dos céus!'
+    }
   }
 }
 
@@ -34,6 +73,27 @@ onMounted(() => {
 
 <template>
   <div class="home-container">
+    <!-- Conteúdo estático sempre visível para garantir que a página tenha conteúdo valioso -->
+    <div class="static-content">
+      <h1>Bíblia Online</h1>
+      <p>Bem-vindo ao nosso site de leitura da Bíblia. Aqui você pode ler a Bíblia Sagrada, acompanhar a liturgia do dia e marcar seu progresso de leitura.</p>
+      
+      <div class="features-section">
+        <div class="feature-card">
+          <h3>Leitura da Bíblia</h3>
+          <p>Acesse todos os livros da Bíblia Sagrada em português, com interface intuitiva e de fácil navegação.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Liturgia Diária</h3>
+          <p>Acompanhe as leituras e orações da liturgia católica do dia, atualizada diariamente.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Progresso de Leitura</h3>
+          <p>Acompanhe seu progresso de leitura e continue de onde parou em qualquer dispositivo.</p>
+        </div>
+      </div>
+    </div>
+    
     <div v-if="loading" class="loading">
       <div class="spinner"></div>
       <p>Carregando liturgia do dia...</p>
@@ -132,6 +192,63 @@ onMounted(() => {
 .home-container {
   padding: 0;
   width: 100%;
+}
+
+.static-content {
+  background-color: var(--card-background);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: background-color 0.3s ease;
+}
+
+.static-content h1 {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.static-content > p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05), rgba(var(--primary-color-rgb), 0.1));
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--accent-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.feature-card p {
+  line-height: 1.6;
+  color: var(--text-color);
 }
 
 .liturgy-container {

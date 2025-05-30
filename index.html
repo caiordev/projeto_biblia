@@ -2,17 +2,102 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="./favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#3a5a78">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Leia a Bíblia online com uma interface moderna e fácil de usar. Acesse todos os livros, capítulos e versículos.">
-    <title>Bíblia Online - Leitura e Estudo</title>
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Leia a Bíblia Sagrada online com uma interface moderna e intuitiva. Acompanhe a liturgia do dia, marque seu progresso de leitura e explore todos os livros da Bíblia.">
+    <title>Bíblia Online - Leitura Bíblica e Liturgia Diária</title>
+    
+    <!-- Preload de fontes e recursos essenciais -->
+    <link rel="preload" href="/favicon.ico" as="image">
+    
+    <!-- Estilos críticos inline para garantir conteúdo visível imediatamente -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Estilos críticos inline para garantir conteúdo visível imediatamente -->
+    <style>
+      #app-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      
+      .initial-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+      
+      .initial-content h1 {
+        color: #3a5a78;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .initial-content p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        color: #333;
+      }
+      
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+        text-align: left;
+      }
+      
+      .feature-item {
+        padding: 1.5rem;
+        background-color: rgba(58, 90, 120, 0.05);
+        border-radius: 12px;
+        border-left: 4px solid #d4a95e;
+      }
+      
+      .feature-item h3 {
+        color: #3a5a78;
+        margin-bottom: 0.5rem;
+      }
+      
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(58, 90, 120, 0.1);
+        border-top: 4px solid #3a5a78;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @media (max-width: 768px) {
+        .initial-content h1 {
+          font-size: 2rem;
+        }
+        
+        .initial-content p {
+          font-size: 1rem;
+        }
+        
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2864099453873000" crossorigin="anonymous"></script>
     <style>
@@ -35,7 +120,58 @@
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- Conteúdo estático pré-renderizado para garantir que o Google veja conteúdo imediatamente -->
+      <div id="app-loading">
+        <div class="initial-content">
+          <h1>Bíblia Online</h1>
+          <p>Bem-vindo à nossa plataforma de leitura bíblica. Aqui você pode ler a Bíblia Sagrada em português, acompanhar a liturgia do dia e marcar seu progresso de leitura.</p>
+          
+          <div class="features">
+            <div class="feature-item">
+              <h3>Leitura da Bíblia</h3>
+              <p>Acesse todos os livros da Bíblia Sagrada em português, com interface intuitiva e de fácil navegação.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Liturgia Diária</h3>
+              <p>Acompanhe as leituras e orações da liturgia católica do dia, atualizada diariamente.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Progresso de Leitura</h3>
+              <p>Acompanhe seu progresso de leitura e continue de onde parou em qualquer dispositivo.</p>
+            </div>
+          </div>
+          
+          <div style="margin-top: 2rem;">
+            <div class="spinner"></div>
+            <p>Carregando a aplicação...</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="./src/main.js"></script>
+    
+    <!-- Script para remover o conteúdo estático quando o app Vue carregar -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Verificar se o app Vue já renderizou
+        const checkAppLoaded = setInterval(function() {
+          const appContent = document.querySelector('#app > :not(#app-loading)');          
+          if (appContent) {
+            // Remover o conteúdo de carregamento quando o app Vue estiver pronto
+            const loadingElement = document.getElementById('app-loading');
+            if (loadingElement) {
+              loadingElement.style.display = 'none';
+            }
+            clearInterval(checkAppLoaded);
+          }
+        }, 100);
+        
+        // Timeout de segurança após 5 segundos
+        setTimeout(function() {
+          clearInterval(checkAppLoaded);
+        }, 5000);
+      });
+    </script>
   </body>
 </html>

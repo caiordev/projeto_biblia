@@ -468,6 +468,12 @@ const nextChapter = () => {
 
 <template>
   <div class="bible-reader" role="region" aria-label="Leitor da Bíblia">
+    <!-- Conteúdo estático para SEO e conformidade com políticas do Google AdSense -->
+    <div class="seo-content">
+      <h1>Leitura da Bíblia Online</h1>
+      <p>Explore a palavra de Deus através da nossa plataforma de leitura bíblica. Navegue pelos livros, capítulos e versículos com facilidade, acompanhe seu progresso de leitura e aprofunde seu conhecimento das Escrituras Sagradas.</p>
+    </div>
+    
     <div class="reader-header">
       <h2 class="book-title">{{ currentBookData?.book || currentBookData?.name || book }} {{ chapter }}</h2>
       
@@ -1115,9 +1121,45 @@ const nextChapter = () => {
   -webkit-font-smoothing: antialiased;
 }
 
+.seo-content {
+  background-color: var(--card-background);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: background-color 0.3s ease;
+}
+
+.seo-content h1 {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.seo-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--text-color);
+}
+
 @media (max-width: 768px) {
   .bible-reader {
     border-radius: 12px;
+  }
+  
+  .seo-content {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .seo-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .seo-content p {
+    font-size: 1rem;
   }
   
   .reader-header {
